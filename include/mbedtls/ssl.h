@@ -1301,12 +1301,6 @@ struct mbedtls_ssl_context
     unsigned badmac_seen;       /*!< records with a bad MAC received    */
 #endif /* MBEDTLS_SSL_DTLS_BADMAC_LIMIT */
 
-#if defined(MBEDTLS_X509_CRT_PARSE_C)
-    /** Callback to customize X.509 certificate chain verification          */
-    int (*f_vrfy)(void *, mbedtls_x509_crt *, int, uint32_t *);
-    void *p_vrfy;                   /*!< context for X.509 verify callback */
-#endif
-
     mbedtls_ssl_send_t *f_send; /*!< Callback for network send */
     mbedtls_ssl_recv_t *f_recv; /*!< Callback for network receive */
     mbedtls_ssl_recv_timeout_t *f_recv_timeout;
@@ -1349,10 +1343,6 @@ struct mbedtls_ssl_context
                                      TLS: maintained by us
                                      DTLS: read from peer             */
     unsigned char *in_hdr;      /*!< start of record header           */
-#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
-    unsigned char *in_cid;      /*!< The start of the CID;
-                                 *   (the end is marked by in_len).   */
-#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
     unsigned char *in_len;      /*!< two-bytes message length field   */
     unsigned char *in_iv;       /*!< ivlen-byte IV                    */
     unsigned char *in_msg;      /*!< message contents (in_iv+ivlen)   */
@@ -1361,9 +1351,7 @@ struct mbedtls_ssl_context
     int in_msgtype;             /*!< record header: message type      */
     size_t in_msglen;           /*!< record header: message length    */
     size_t in_left;             /*!< amount of data read so far       */
-#if defined(MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH)
-    size_t in_buf_len;          /*!< length of input buffer           */
-#endif
+
 #if defined(MBEDTLS_SSL_PROTO_DTLS)
     uint16_t in_epoch;          /*!< DTLS epoch for incoming records  */
     size_t next_record_offset;  /*!< offset of the next record in datagram
@@ -1392,10 +1380,6 @@ struct mbedtls_ssl_context
     unsigned char *out_buf;     /*!< output buffer                    */
     unsigned char *out_ctr;     /*!< 64-bit outgoing message counter  */
     unsigned char *out_hdr;     /*!< start of record header           */
-#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
-    unsigned char *out_cid;     /*!< The start of the CID;
-                                 *   (the end is marked by in_len).   */
-#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
     unsigned char *out_len;     /*!< two-bytes message length field   */
     unsigned char *out_iv;      /*!< ivlen-byte IV                    */
     unsigned char *out_msg;     /*!< message contents (out_iv+ivlen)  */
@@ -1403,9 +1387,6 @@ struct mbedtls_ssl_context
     int out_msgtype;            /*!< record header: message type      */
     size_t out_msglen;          /*!< record header: message length    */
     size_t out_left;            /*!< amount of data not yet written   */
-#if defined(MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH)
-    size_t out_buf_len;         /*!< length of output buffer          */
-#endif
 
     unsigned char cur_out_ctr[8]; /*!<  Outgoing record sequence  number. */
 
@@ -1437,13 +1418,6 @@ struct mbedtls_ssl_context
     const char *alpn_chosen;    /*!<  negotiated protocol                   */
 #endif /* MBEDTLS_SSL_ALPN */
 
-#if defined(MBEDTLS_SSL_DTLS_SRTP)
-    /*
-     * use_srtp extension
-     */
-    mbedtls_dtls_srtp_info dtls_srtp_info;
-#endif /* MBEDTLS_SSL_DTLS_SRTP */
-
     /*
      * Information for DTLS hello verify
      */
@@ -1453,11 +1427,15 @@ struct mbedtls_ssl_context
 #endif /* MBEDTLS_SSL_DTLS_HELLO_VERIFY && MBEDTLS_SSL_SRV_C */
 
     /*
-     * Secure renegotiation
-     */
+        * Secure renegotiation
+        */
     /* needed to know when to send extension on server */
     int secure_renegotiation;           /*!<  does peer support legacy or
                                               secure renegotiation           */
+
+
+
+
 #if defined(MBEDTLS_SSL_RENEGOTIATION)
     size_t verify_data_len;             /*!<  length of verify data stored   */
     char own_verify_data[MBEDTLS_SSL_VERIFY_DATA_MAX_LEN]; /*!<  previous handshake verify data */
@@ -1478,6 +1456,38 @@ struct mbedtls_ssl_context
                             *   Possible values are #MBEDTLS_SSL_CID_ENABLED
                             *   and #MBEDTLS_SSL_CID_DISABLED. */
 #endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
+    /** Callback to customize X.509 certificate chain verification          */
+    int (*f_vrfy)(void *, mbedtls_x509_crt *, int, uint32_t *);
+    void *p_vrfy;                   /*!< context for X.509 verify callback */
+#endif
+
+#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
+    unsigned char *in_cid;      /*!< The start of the CID;
+                                 *   (the end is marked by in_len).   */
+#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+
+#if defined(MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH)
+    size_t in_buf_len;          /*!< length of input buffer           */
+#endif
+
+#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
+    unsigned char *out_cid;     /*!< The start of the CID;
+                                 *   (the end is marked by in_len).   */
+#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+
+#if defined(MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH)
+    size_t out_buf_len;         /*!< length of output buffer          */
+#endif
+
+#if defined(MBEDTLS_SSL_DTLS_SRTP)
+    /*
+     * use_srtp extension
+     */
+    mbedtls_dtls_srtp_info dtls_srtp_info;
+#endif /* MBEDTLS_SSL_DTLS_SRTP */
+
 };
 
 #if defined(MBEDTLS_SSL_HW_RECORD_ACCEL)

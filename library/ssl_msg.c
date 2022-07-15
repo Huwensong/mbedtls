@@ -2081,6 +2081,7 @@ int mbedtls_ssl_fetch_input( mbedtls_ssl_context *ssl, size_t nb_want )
  */
 int mbedtls_ssl_flush_output( mbedtls_ssl_context *ssl )
 {
+    printf("%s called!!!\n", __func__ );
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     unsigned char *buf;
 
@@ -2088,6 +2089,7 @@ int mbedtls_ssl_flush_output( mbedtls_ssl_context *ssl )
 
     if( ssl->f_send == NULL )
     {
+        printf("ssl->f_send == NULL\n");
         MBEDTLS_SSL_DEBUG_MSG( 1, ( "Bad usage of mbedtls_ssl_set_bio() "
                             "or mbedtls_ssl_set_bio()" ) );
         return( MBEDTLS_ERR_SSL_BAD_INPUT_DATA );
@@ -2096,18 +2098,22 @@ int mbedtls_ssl_flush_output( mbedtls_ssl_context *ssl )
     /* Avoid incrementing counter if data is flushed */
     if( ssl->out_left == 0 )
     {
+        printf("ssl->out_left == 0\n");
         MBEDTLS_SSL_DEBUG_MSG( 2, ( "<= flush output" ) );
         return( 0 );
     }
 
+    printf("ssl->out_left = %zu\n",ssl->out_left);
     while( ssl->out_left > 0 )
     {
         MBEDTLS_SSL_DEBUG_MSG( 2, ( "message length: %" MBEDTLS_PRINTF_SIZET
                                     ", out_left: %" MBEDTLS_PRINTF_SIZET,
                        mbedtls_ssl_out_hdr_len( ssl ) + ssl->out_msglen, ssl->out_left ) );
-
+        printf("message length: %zu, out_left: %zu\n",mbedtls_ssl_out_hdr_len( ssl ) + ssl->out_msglen, ssl->out_left);
         buf = ssl->out_hdr - ssl->out_left;
         ret = ssl->f_send( ssl->p_bio, buf, ssl->out_left );
+        printf("ret = %d\n",ret);
+
 
         MBEDTLS_SSL_DEBUG_RET( 2, "ssl->f_send", ret );
 

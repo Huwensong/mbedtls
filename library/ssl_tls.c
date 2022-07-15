@@ -4207,10 +4207,15 @@ void mbedtls_ssl_set_bio( mbedtls_ssl_context *ssl,
         mbedtls_ssl_recv_t *f_recv,
         mbedtls_ssl_recv_timeout_t *f_recv_timeout )
 {
+    printf("%s called\n",__func__ );
     ssl->p_bio          = p_bio;
     ssl->f_send         = f_send;
     ssl->f_recv         = f_recv;
     ssl->f_recv_timeout = f_recv_timeout;
+    if (ssl->f_send == NULL)
+        printf("ssl->f_send == NULL\n");
+    else
+        printf("ssl->f_send != NULL\n");
 }
 
 #if defined(MBEDTLS_SSL_PROTO_DTLS)
@@ -5848,12 +5853,26 @@ int mbedtls_ssl_handshake_step( mbedtls_ssl_context *ssl )
  */
 int mbedtls_ssl_handshake( mbedtls_ssl_context *ssl )
 {
+    printf("%s called!!!\n", __func__);
     int ret = 0;
 
     /* Sanity checks */
 
-    if( ssl == NULL || ssl->conf == NULL )
-        return( MBEDTLS_ERR_SSL_BAD_INPUT_DATA );
+    if (ssl == NULL || ssl->conf == NULL)
+    {
+        printf("ssl == NULL || ssl->conf == NULL\n");
+        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+    }
+    if(ssl->p_bio == NULL)
+    {
+        printf("ssl->p_bio == NULLL\n");
+    }
+    else
+    {
+        printf("ssl->p_bio != NULLL\n");
+    }
+
+
 
 #if defined(MBEDTLS_SSL_PROTO_DTLS)
     if( ssl->conf->transport == MBEDTLS_SSL_TRANSPORT_DATAGRAM &&
