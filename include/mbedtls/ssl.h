@@ -974,10 +974,6 @@ mbedtls_dtls_srtp_info;
  */
 struct mbedtls_ssl_session
 {
-#if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH)
-    unsigned char mfl_code;     /*!< MaxFragmentLength negotiated by peer */
-#endif /* MBEDTLS_SSL_MAX_FRAGMENT_LENGTH */
-
 #if defined(MBEDTLS_HAVE_TIME)
     mbedtls_time_t start;       /*!< starting time      */
 #endif
@@ -988,15 +984,7 @@ struct mbedtls_ssl_session
     unsigned char master[48];   /*!< the master secret  */
 
 #if defined(MBEDTLS_X509_CRT_PARSE_C)
-#if defined(MBEDTLS_SSL_KEEP_PEER_CERTIFICATE)
-    mbedtls_x509_crt *peer_cert;       /*!< peer X.509 cert chain */
-#else /* MBEDTLS_SSL_KEEP_PEER_CERTIFICATE */
-    /*! The digest of the peer's end-CRT. This must be kept to detect CRT
-     *  changes during renegotiation, mitigating the triple handshake attack. */
-    unsigned char *peer_cert_digest;
-    size_t peer_cert_digest_len;
-    mbedtls_md_type_t peer_cert_digest_type;
-#endif /* !MBEDTLS_SSL_KEEP_PEER_CERTIFICATE */
+    mbedtls_x509_crt *peer_cert;        /*!< peer X.509 cert chain */
 #endif /* MBEDTLS_X509_CRT_PARSE_C */
     uint32_t verify_result;          /*!<  verification result     */
 
@@ -1005,6 +993,10 @@ struct mbedtls_ssl_session
     size_t ticket_len;          /*!< session ticket length   */
     uint32_t ticket_lifetime;   /*!< ticket lifetime hint    */
 #endif /* MBEDTLS_SSL_SESSION_TICKETS && MBEDTLS_SSL_CLI_C */
+
+#if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH)
+    unsigned char mfl_code;     /*!< MaxFragmentLength negotiated by peer */
+#endif /* MBEDTLS_SSL_MAX_FRAGMENT_LENGTH */
 
 #if defined(MBEDTLS_SSL_TRUNCATED_HMAC)
     int trunc_hmac;             /*!< flag for truncated hmac activation   */
@@ -1191,43 +1183,43 @@ struct mbedtls_ssl_config
      * byte access).
      */
 
-    uint8_t endpoint /*bool*/;      /*!< 0: client, 1: server               */
-    uint8_t transport /*bool*/;     /*!< stream (TLS) or datagram (DTLS)    */
-    uint8_t authmode /*2 bits*/;    /*!< MBEDTLS_SSL_VERIFY_XXX             */
+    unsigned int endpoint : 1;      /*!< 0: client, 1: server               */
+    unsigned int transport : 1;     /*!< stream (TLS) or datagram (DTLS)    */
+    unsigned int authmode : 2;      /*!< MBEDTLS_SSL_VERIFY_XXX             */
     /* needed even with renego disabled for LEGACY_BREAK_HANDSHAKE          */
-    uint8_t allow_legacy_renegotiation /*2 bits*/; /*!< MBEDTLS_LEGACY_XXX  */
+    unsigned int allow_legacy_renegotiation : 2 ; /*!< MBEDTLS_LEGACY_XXX   */
 #if defined(MBEDTLS_ARC4_C)
-    uint8_t arc4_disabled /*bool*/; /*!< blacklist RC4 ciphersuites?        */
+    unsigned int arc4_disabled : 1; /*!< blacklist RC4 ciphersuites?        */
 #endif
 #if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH)
-    uint8_t mfl_code /*3 bits*/;    /*!< desired fragment length            */
+    unsigned int mfl_code : 3;      /*!< desired fragment length            */
 #endif
 #if defined(MBEDTLS_SSL_ENCRYPT_THEN_MAC)
-    uint8_t encrypt_then_mac /*bool*/;  /*!< negotiate encrypt-then-mac?    */
+    unsigned int encrypt_then_mac : 1 ; /*!< negotiate encrypt-then-mac?    */
 #endif
 #if defined(MBEDTLS_SSL_EXTENDED_MASTER_SECRET)
-    uint8_t extended_ms /*bool*/;   /*!< negotiate extended master secret?  */
+    unsigned int extended_ms : 1;   /*!< negotiate extended master secret?  */
 #endif
 #if defined(MBEDTLS_SSL_DTLS_ANTI_REPLAY)
-    uint8_t anti_replay /*bool*/;   /*!< detect and prevent replay?         */
+    unsigned int anti_replay : 1;   /*!< detect and prevent replay?         */
 #endif
 #if defined(MBEDTLS_SSL_CBC_RECORD_SPLITTING)
-    uint8_t cbc_record_splitting /*bool*/;  /*!< do cbc record splitting    */
+    unsigned int cbc_record_splitting : 1;  /*!< do cbc record splitting    */
 #endif
 #if defined(MBEDTLS_SSL_RENEGOTIATION)
-    uint8_t disable_renegotiation /*bool*/; /*!< disable renegotiation?     */
+    unsigned int disable_renegotiation : 1; /*!< disable renegotiation?     */
 #endif
 #if defined(MBEDTLS_SSL_TRUNCATED_HMAC)
-    uint8_t trunc_hmac /*bool*/;    /*!< negotiate truncated hmac?          */
+    unsigned int trunc_hmac : 1;    /*!< negotiate truncated hmac?          */
 #endif
 #if defined(MBEDTLS_SSL_SESSION_TICKETS)
-    uint8_t session_tickets /*bool*/;   /*!< use session tickets?           */
+    unsigned int session_tickets : 1;   /*!< use session tickets?           */
 #endif
 #if defined(MBEDTLS_SSL_FALLBACK_SCSV) && defined(MBEDTLS_SSL_CLI_C)
-    uint8_t fallback /*bool*/;      /*!< is this a fallback?                */
+    unsigned int fallback : 1;      /*!< is this a fallback?                */
 #endif
 #if defined(MBEDTLS_SSL_SRV_C)
-    uint8_t cert_req_ca_list /*bool*/;  /*!< enable sending CA list in
+    unsigned int cert_req_ca_list : 1;  /*!< enable sending CA list in
                                           Certificate Request messages?     */
 #endif
 

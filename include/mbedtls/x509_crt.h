@@ -51,8 +51,6 @@ extern "C" {
  */
 typedef struct mbedtls_x509_crt
 {
-    int own_buffer;                     /**< Indicates if \c raw is owned
-                                         *   by the structure or not.        */
     mbedtls_x509_buf raw;               /**< The raw certificate data (DER). */
     mbedtls_x509_buf tbs;               /**< The raw certificate body (DER). The part that is To Be Signed. */
 
@@ -68,16 +66,12 @@ typedef struct mbedtls_x509_crt
 
     mbedtls_x509_time valid_from;       /**< Start time of certificate validity. */
     mbedtls_x509_time valid_to;         /**< End time of certificate validity. */
-
-    mbedtls_x509_buf pk_raw;
     mbedtls_pk_context pk;              /**< Container for the public key context. */
 
     mbedtls_x509_buf issuer_id;         /**< Optional X.509 v2/v3 issuer unique identifier. */
     mbedtls_x509_buf subject_id;        /**< Optional X.509 v2/v3 subject unique identifier. */
     mbedtls_x509_buf v3_ext;            /**< Optional X.509 v3 extensions.  */
     mbedtls_x509_sequence subject_alt_names;    /**< Optional list of raw entries of Subject Alternative Names extension (currently only dNSName and OtherName are listed). */
-
-    mbedtls_x509_sequence certificate_policies; /**< Optional list of certificate policies (Only anyPolicy is printed and enforced, however the rest of the policies are still listed). */
 
     int ext_types;              /**< Bit string containing detected and parsed extensions */
     int ca_istrue;              /**< Optional Basic Constraint extension value: 1 if this certificate belongs to a CA, 0 otherwise. */
@@ -95,6 +89,11 @@ typedef struct mbedtls_x509_crt
     void *sig_opts;             /**< Signature options to be passed to mbedtls_pk_verify_ext(), e.g. for RSASSA-PSS */
 
     struct mbedtls_x509_crt *next;     /**< Next certificate in the CA-chain. */
+    int own_buffer;                     /**< Indicates if \c raw is owned
+                                         *   by the structure or not.        */
+
+    mbedtls_x509_buf pk_raw;
+    mbedtls_x509_sequence certificate_policies; /**< Optional list of certificate policies (Only anyPolicy is printed and enforced, however the rest of the policies are still listed). */
 }
 mbedtls_x509_crt;
 
