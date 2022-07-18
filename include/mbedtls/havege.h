@@ -42,9 +42,9 @@ extern "C" {
  */
 typedef struct mbedtls_havege_state
 {
-    uint32_t PT1, PT2, offset[2];
-    uint32_t pool[MBEDTLS_HAVEGE_COLLECT_SIZE];
-    uint32_t WALK[8192];
+    int PT1, PT2, offset[2];
+    int pool[MBEDTLS_HAVEGE_COLLECT_SIZE];
+    int WALK[8192];
 }
 mbedtls_havege_state;
 

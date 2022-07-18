@@ -173,25 +173,14 @@ extern "C" {
 typedef struct mbedtls_ctr_drbg_context
 {
     unsigned char counter[16];  /*!< The counter (V). */
-    int reseed_counter;         /*!< The reseed counter.
-                                 * This is the number of requests that have
-                                 * been made since the last (re)seeding,
-                                 * minus one.
-                                 * Before the initial seeding, this field
-                                 * contains the amount of entropy in bytes
-                                 * to use as a nonce for the initial seeding,
-                                 * or -1 if no nonce length has been explicitly
-                                 * set (see mbedtls_ctr_drbg_set_nonce_len()).
-                                 */
+    int reseed_counter;         /*!< The reseed counter. */
     int prediction_resistance;  /*!< This determines whether prediction
                                      resistance is enabled, that is
                                      whether to systematically reseed before
                                      each random generation. */
     size_t entropy_len;         /*!< The amount of entropy grabbed on each
-                                     seed or reseed operation, in bytes. */
-    int reseed_interval;        /*!< The reseed interval.
-                                 * This is the maximum number of requests
-                                 * that can be made between reseedings. */
+                                     seed or reseed operation. */
+    int reseed_interval;        /*!< The reseed interval. */
 
     mbedtls_aes_context aes_ctx;        /*!< The AES context. */
 
@@ -204,13 +193,6 @@ typedef struct mbedtls_ctr_drbg_context
     void *p_entropy;            /*!< The context for the entropy function. */
 
 #if defined(MBEDTLS_THREADING_C)
-    /* Invariant: the mutex is initialized if and only if f_entropy != NULL.
-     * This means that the mutex is initialized during the initial seeding
-     * in mbedtls_ctr_drbg_seed() and freed in mbedtls_ctr_drbg_free().
-     *
-     * Note that this invariant may change without notice. Do not rely on it
-     * and do not access the mutex directly in application code.
-     */
     mbedtls_threading_mutex_t mutex;
 #endif
 }

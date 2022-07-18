@@ -108,10 +108,7 @@ extern "C" {
  */
 typedef struct mbedtls_rsa_context
 {
-    int ver;                    /*!<  Reserved for internal purposes.
-                                 *    Do not set this field in application
-                                 *    code. Its meaning might change without
-                                 *    notice. */
+    int ver;                    /*!<  Always 0.*/
     size_t len;                 /*!<  The size of \p N in Bytes. */
 
     mbedtls_mpi N;              /*!<  The public modulus. */
