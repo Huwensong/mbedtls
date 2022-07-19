@@ -49,6 +49,8 @@
 
 #include <string.h>
 
+#include "mbedtls/net_sockets.h"
+
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
 #include "mbedtls/psa_util.h"
 #include "psa/crypto.h"
@@ -2111,6 +2113,7 @@ int mbedtls_ssl_flush_output( mbedtls_ssl_context *ssl )
                        mbedtls_ssl_out_hdr_len( ssl ) + ssl->out_msglen, ssl->out_left ) );
         printf("message length: %zu, out_left: %zu\n",mbedtls_ssl_out_hdr_len( ssl ) + ssl->out_msglen, ssl->out_left);
         buf = ssl->out_hdr - ssl->out_left;
+        printf("ssl->p_bio = %d\n",((mbedtls_net_context *)(ssl->p_bio))->fd);
         ret = ssl->f_send( ssl->p_bio, buf, ssl->out_left );
         printf("ret = %d\n",ret);
 
